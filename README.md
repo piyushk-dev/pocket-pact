@@ -10,11 +10,15 @@ Ananya is away at college. Her dad, Kunal, sends ₹1,000 for the week. Together
 - `apps/api`: independent Node.js API; provider secrets stay here.
 - `packages/shared`: validated data contracts and budget rules.
 
-UI and complete user flows are being built first; existing Gemini and Sarvam credentials will be connected afterward. This is a demo household, not a bank account or money-transfer service.
+The interactive UI is implemented first. Existing Gemini and Sarvam credentials will be connected after UI review. Expense capture, budget flags, context, acknowledgement, top-ups and mutually accepted pact changes currently use local browser demo state. This is a demo household, not a bank account or money-transfer service.
 
 ## Development
 
-Node 22.12+ and npm. Install with `npm install`. `npm run dev:web` starts the frontend. The full development command and integration instructions will be added with the API milestone.
+Node 22.12+ and npm. Install with `npm install`, then run `npm run dev` and open http://127.0.0.1:5173. `npm run build`, `npm run typecheck` and `npm run lint` validate the frontend.
+
+To try the main flow: Add expense → Coffee with friends example → review the ₹60 category overage → Save ₹90 → switch to Kunal in the top-right selector → Family → acknowledge the expense. Our pact also supports a proposed budget change that the other person must accept.
+
+Receipt/photo previews and voice-entry controls are present; provider-backed extraction/transcription are not connected in this UI milestone. Use “Enter details myself” or the labeled examples. Demo data remains in this browser’s localStorage.
 
 ## Provenance
 
