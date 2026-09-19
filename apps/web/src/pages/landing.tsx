@@ -5,6 +5,7 @@ import {
   BookOpen,
   BusFront,
   Camera,
+  ChartNoAxesCombined,
   Check,
   CheckCheck,
   ChevronDown,
@@ -13,7 +14,6 @@ import {
   Handshake,
   Menu,
   MessageCircle,
-  Play,
   Plus,
   ReceiptText,
   SlidersHorizontal,
@@ -21,8 +21,9 @@ import {
   Wallet,
   X,
 } from "lucide-react";
-import { PhoneDemo, PhoneScreen } from "../components/phone-demo";
+import { PhoneDemo } from "../components/phone-demo";
 import "../landing.css";
+import "../walkthrough.css";
 
 const faqs = [
   [
@@ -38,8 +39,12 @@ const faqs = [
     "The app compares it with the agreed categories and budgets. Ananya can add a note before saving. Kunal sees the exception and her context in the Family inbox, where he can reply and acknowledge it.",
   ],
   [
-    "Can I upload a receipt or use my voice?",
-    "You can explore the capture screens and preview a receipt upload. AI extraction and voice transcription are planned integrations and are not connected in this UI preview. Use manual entry or a sample expense to try the full flow.",
+    "How do photo suggestions and food flags work?",
+    "The product preview shows AI suggesting a food category from a photo and checking it against preferences you agree on together. Ananya reviews or corrects the suggestion, adds the amount and chooses what to share. A photo cannot prove a price or diagnose eating habits. AI and food-preference flags are planned integrations; manual expense entry and budget flags work in the current web app.",
+  ],
+  [
+    "What will the monthly recap show?",
+    "Spending by category, patterns across weeks, and check-ins to discuss. The walkthrough uses a clearly labeled sample month to show the planned experience. Monthly insights are not yet connected to the web app's saved expenses.",
   ],
   [
     "Does the demo use real money?",
@@ -53,22 +58,10 @@ const faqs = [
 
 export function Landing() {
   const [menu, setMenu] = useState(false);
-  const [restart, setRestart] = useState(0);
   useEffect(() => {
     document.title = "Pocket Pact · Pocket money. Shared understanding.";
     window.scrollTo(0, 0);
   }, []);
-  function watchDemo() {
-    setRestart((value) => value + 1);
-    document
-      .getElementById("walkthrough")
-      ?.scrollIntoView({
-        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-          ? "instant"
-          : "smooth",
-        block: "center",
-      });
-  }
   return (
     <div className="landing">
       <a className="skip-link" href="#landing-main">
@@ -100,7 +93,7 @@ export function Landing() {
             </a>
           </nav>
           <Link className="button site-demo" to="/app">
-            Demo <ArrowRight size={17} />
+            Try the web app <ArrowRight size={17} />
           </Link>
           <button
             className="menu-toggle"
@@ -125,17 +118,14 @@ export function Landing() {
               <span>Shared understanding.</span>
             </h1>
             <p>
-              Plan the week together. Spend independently.
-              <br className="desktop-break" /> Keep the conversation open, one
-              expense at a time.
+              Plan the allowance. Capture the everyday.
+              <br className="desktop-break" /> Turn spending into better
+              conversations.
             </p>
             <div className="hero-actions">
               <Link className="button site-demo" to="/app">
-                Demo <ArrowRight size={19} />
+                Try the web app <ArrowRight size={19} />
               </Link>
-              <button className="button watch-button" onClick={watchDemo}>
-                <Play size={18} /> Watch the flow
-              </button>
             </div>
             <div className="hero-footnote">
               <span className="family-mini-avatars">
@@ -145,11 +135,13 @@ export function Landing() {
               <span>
                 Meet Ananya & Kunal.
                 <br />
-                <strong>One week. ₹1,000. A plan of their own.</strong>
+                <strong>
+                  ₹1,000 a week. Two perspectives. One shared plan.
+                </strong>
               </span>
             </div>
           </div>
-          <PhoneDemo key={restart} restart={restart} />
+          <PhoneDemo />
         </section>
         <section className="story-strip site-container" id="how-it-works">
           <div>
@@ -161,9 +153,10 @@ export function Landing() {
             </h2>
           </div>
           <p>
-            Kunal sends Ananya her weekly pocket money. She has college,
-            friends, and a life to figure out. Pocket Pact helps them agree on a
-            plan—and understand the moments that don’t fit it.
+            Kunal wants to know the allowance lasts. Ananya wants room to live
+            her life. A photo of lunch, a note about a late class, a shared plan
+            for next month— Pocket Pact gives them something better than a bank
+            statement to talk about.
           </p>
         </section>
         <section className="features-section site-container" id="features">
@@ -205,12 +198,26 @@ export function Landing() {
               <span className="feature-icon">
                 <Camera />
               </span>
-              <h3>Small spends. Full picture.</h3>
-              <p>Capture an expense. Check the details. Add your context.</p>
+              <h3>Snap the spend. Keep the story.</h3>
+              <p>
+                A receipt or a photo of what you bought. Add the amount and your
+                side of the story.
+              </p>
               <div className="feature-phone-scene visual-grid">
-                <div className="mini-phone">
-                  <div className="phone-island" />
-                  <PhoneScreen step={1} />
+                <div className="feature-photo-story">
+                  <img
+                    src="/images/meal-example.webp"
+                    alt="Sample photo of a burger and fries"
+                    loading="lazy"
+                  />
+                  <span>
+                    <Camera size={17} /> Lunch after class
+                  </span>
+                  <div>
+                    <strong>₹180</strong>
+                    <span>Amount entered by Ananya</span>
+                    <CheckCheck size={20} />
+                  </div>
                 </div>
                 <span className="feature-visual-label">
                   <ReceiptText size={17} /> Your story belongs with the receipt.
@@ -308,8 +315,11 @@ export function Landing() {
               <span className="feature-icon">
                 <MessageCircle />
               </span>
-              <h3>Context before conclusions</h3>
-              <p>An unexpected expense is a reason to talk.</p>
+              <h3>A flag, with the full story</h3>
+              <p>
+                Spot a possible mismatch with your shared preferences. Hear the
+                context before drawing conclusions.
+              </p>
               <div className="conversation-visual visual-grid">
                 <div className="expense-proof">
                   <div>
@@ -317,21 +327,21 @@ export function Landing() {
                       <Coffee size={21} />
                     </span>
                     <div>
-                      <small>Your choice</small>
-                      <strong>Coffee with friends</strong>
+                      <small>Photo suggestion · Preview</small>
+                      <strong>Possible fast food</strong>
                     </div>
-                    <span className="proof-amount">₹90</span>
+                    <span className="proof-amount">₹180</span>
                   </div>
                   <span className="proof-flag">
-                    <Flag size={13} /> ₹60 outside this week’s plan
+                    <Flag size={13} /> 3rd meal · Shared preference: 2 per week
                   </span>
                 </div>
                 <div className="sample-message">
                   <span className="mini-avatar">A</span>
                   <p>
-                    “Caught up after our last class.
+                    “The mess was closed after lab.
                     <br />
-                    I’ll plan for it next week.”
+                    Grabbed a burger with friends.”
                   </p>
                 </div>
                 <div className="conversation-footer">
@@ -370,6 +380,68 @@ export function Landing() {
                     <Handshake size={16} /> Changes take two yeses.
                   </footer>
                 </div>
+              </div>
+            </article>
+            <article className="feature-card monthly-feature">
+              <div className="monthly-feature-copy">
+                <span className="feature-icon">
+                  <ChartNoAxesCombined />
+                </span>
+                <span className="preview-label">
+                  MONTHLY INSIGHTS · PRODUCT PREVIEW
+                </span>
+                <h3>
+                  See the pattern.
+                  <br />
+                  Make a better plan.
+                </h3>
+                <p>
+                  Where did the month go? See spending by category, revisit the
+                  exceptions, and decide what next month needs.
+                </p>
+                <div className="monthly-takeaway">
+                  <MessageCircle size={20} />
+                  <span>
+                    “More late classes this month.
+                    <br />
+                    <strong>Let’s leave a little extra for meals.”</strong>
+                  </span>
+                </div>
+              </div>
+              <div className="monthly-preview">
+                <header>
+                  <div>
+                    <small>A sample month</small>
+                    <strong>September at a glance</strong>
+                  </div>
+                  <span>₹760 left</span>
+                </header>
+                <div className="monthly-total">
+                  <strong>₹3,240</strong>
+                  <span>of ₹4,000 recorded</span>
+                </div>
+                <div className="monthly-category-bars">
+                  {[
+                    { label: "Meals", amount: 1380 },
+                    { label: "Commute", amount: 720 },
+                    { label: "Study", amount: 640 },
+                    { label: "Your choice", amount: 500 },
+                  ].map(({ label, amount }) => (
+                    <div key={label}>
+                      <span>{label}</span>
+                      <div>
+                        <i style={{ width: `${amount / 15}%` }} />
+                      </div>
+                      <strong>₹{amount.toLocaleString("en-IN")}</strong>
+                    </div>
+                  ))}
+                </div>
+                <footer>
+                  <CheckCheck size={18} />
+                  <span>
+                    2 check-ins talked through. 1 conversation to have.
+                  </span>
+                </footer>
               </div>
             </article>
           </div>
@@ -415,10 +487,10 @@ export function Landing() {
             </h2>
             <p>Take a week in Ananya and Kunal’s shoes.</p>
             <Link className="button" to="/app">
-              Demo <ArrowRight size={19} />
+              Try the web app <ArrowRight size={19} />
             </Link>
             <span className="cta-note">
-              No sign-up. Just a shared story to explore.
+              No sign-up. Explore both sides of the story.
             </span>
           </div>
         </section>
@@ -458,7 +530,7 @@ export function Landing() {
             <strong>Explore</strong>
             <a href="#how-it-works">How it works</a>
             <a href="#features">Features</a>
-            <Link to="/app">Demo</Link>
+            <Link to="/app">Try the web app</Link>
           </div>
           <div>
             <strong>The story</strong>
