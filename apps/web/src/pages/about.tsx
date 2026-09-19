@@ -84,10 +84,10 @@ export function About() {
         <details>
           <summary>What gets sent to AI providers?</summary>
           <p>
-            When you choose “Read my expense,” its text and optional image are
-            sent to Google Gemini. Voice recording is sent to Sarvam for
-            transcription. Your API keys stay on the server. Review suggestions
-            before saving.
+            AI providers are not connected in this UI preview. Planned
+            integrations include Gemini for receipt suggestions and Sarvam for
+            voice transcription. Use manual entry or sample expenses to explore
+            the complete flow today.
           </p>
         </details>
         <details>
@@ -99,7 +99,7 @@ export function About() {
           </p>
         </details>
       </section>
-      <Link className="button primary" to="/">
+      <Link className="button primary" to="/app">
         Back to your week <ArrowRight size={17} />
       </Link>
     </div>

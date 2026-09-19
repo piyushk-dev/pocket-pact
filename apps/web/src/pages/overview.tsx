@@ -40,8 +40,8 @@ export function Overview() {
         <div>
           <h1>
             {role === "daughter"
-              ? "A little planning. A lot of freedom."
-              : "A little support. A world of her own."}
+              ? "Your week. Your way."
+              : "A little closer to her week."}
           </h1>
           <p>
             {role === "daughter"

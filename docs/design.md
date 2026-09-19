@@ -2,20 +2,24 @@
 
 Ananya and her dad, Kunal, agree on a weekly plan. The product supports independence through expense capture, understandable exceptions, and conversation. It never blocks access to money or treats a food photograph as proof of an amount spent.
 
-Primary concept: `.design/dashboard-concept.png` (local design artifact, generated with the built-in image tool). The concept's original father name is superseded by the user's explicit choice of Kunal.
+## Approved visual reference
+
+The user supplied CashBook landing-page and phone-walkthrough screenshots and requested this direction in place of the earlier green/serif concept. Follow their white backgrounds, violet accents, large sans-serif headings, black pill buttons, light grid backgrounds, soft card shadows, device mockups, dark closing CTA and expandable FAQs. Use Pocket Pact's own brand, content and expense flows. The primary CTA is **Demo**.
+
+Image generation was unavailable at its usage limit during the redesign. Device scenes are implemented directly in React/CSS from the supplied references; no generated bitmap is required.
 
 ## Tokens and composition
 
-- Warm paper `#f7f8f2`; ink `#24362d`; forest `#244b3b`; lime `#dff1ad`; line `#dde3d7`.
-- Editorial Georgia headings and figures; self-hosted Manrope for interface and body.
-- Fixed 224px left rail; open main canvas, 40px desktop gutters, 64/36 content split.
+- Canvas `#ffffff`; ink `#24212f`; violet `#5947ed`; pale violet `#f4f1ff`; line `#eae7f1`.
+- Self-hosted Manrope, 400–700. Bold sans-serif headings and readable tabular money figures.
+- Landing: sticky horizontal header, split hero, animated phone, story strip, feature grid, laptop expense preview, three steps, dark CTA, FAQ and footer.
+- Four illustrative phone states: weekly balance → receipt capture → expense/context review → saved and shared. Automatic playback pauses with user controls. Reduced motion starts with a static screen and supports explicit playback/step selection.
+- App: horizontal desktop navigation, prominent violet balance card, white expense and pact surfaces, black primary actions. Mobile has a visible persona selector and bottom navigation.
 - Navigation: Overview, Expenses, Our pact, Family. Demo persona selector stays visible.
-- Primary screen: greeting, weekly balance, recent expenses, agreed category limits, context note, receipt/voice capture strip.
-- Lucide outline icons, 20–24px; active Overview icon filled. Rounded 12–16px surfaces, modest borders, no decorative gradients.
-- Mobile: compact brand/persona header, bottom navigation, one-column content, large touch targets.
+- Lucide outline icons; rounded 18–27px surfaces; subtle borders and shadows.
 
 ## Required supporting states
 
-Add expense uses a focused dialog: input → suggested details → explicit confirmation. Photo, voice and typed entry share the review step. Details remain editable before sharing. Unknown price is left blank. Budget flags are deterministic and remain distinct from AI extraction.
+Add expense uses a focused dialog: input → suggested details → explicit confirmation. Photo, voice and typed entry share the review step. Details remain editable before sharing. Unknown price is left blank. Budget flags are deterministic and remain distinct from planned AI extraction.
 
-Expenses have filters, detail view, context and acknowledgement. A proposed pact change requires the other person's acceptance. Kunal's view emphasizes remaining funds, category totals and shared exceptions. Demo top-ups are bookkeeping, not real transfers. Empty, loading, failure and success states are part of every workflow.
+Expenses have filters, detail view, context and acknowledgement. A proposed pact change requires the other person's acceptance. Kunal's view emphasizes remaining funds, category totals and shared exceptions. Demo top-ups are bookkeeping, not real transfers. Empty, failure and success states remain available. Backend integrations are deferred until UI review.

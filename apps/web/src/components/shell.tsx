@@ -3,7 +3,6 @@ import {
   ChevronDown,
   Handshake,
   House,
-  Leaf,
   ReceiptText,
   Users,
   CircleHelp,
@@ -13,16 +12,16 @@ import { pendingExpenses, type Role } from "@shared/domain";
 import { usePact } from "../state";
 import { ExpenseDialog } from "./expense-dialog";
 import { useEffect } from "react";
+import "../app-theme.css";
 
 const navigation = [
-  { to: "/", label: "Overview", icon: House },
+  { to: "/app", label: "Overview", icon: House },
   { to: "/expenses", label: "Expenses", icon: ReceiptText },
   { to: "/pact", label: "Our pact", icon: Handshake },
   { to: "/family", label: "Family", icon: Users },
 ];
 export function Shell() {
-  const { role, switchRole, state, toast, capture, openCapture, ready } =
-    usePact();
+  const { role, switchRole, state, toast, capture, openCapture } = usePact();
   const location = useLocation();
   const pending =
     pendingExpenses(state).length +
@@ -36,45 +35,26 @@ export function Shell() {
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <aside className="sidebar">
-        <Link className="brand" to="/" aria-label="Pocket Pact home">
-          <img src="/icon.svg" alt="" />
-          <span>Pocket Pact</span>
-        </Link>
-        <nav className="navigation" aria-label="Main navigation">
-          {navigation.map(({ to, label, icon: Icon }) => (
-            <NavLink key={to} to={to} end={to === "/"}>
-              <Icon size={22} />
-              <span>{label}</span>
-              {to === "/family" && pending > 0 && (
-                <span className="nav-count">{pending}</span>
-              )}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="sidebar-bottom">
-          <Link to="/about" className="help-link">
-            <CircleHelp size={18} /> How it works
-          </Link>
-          <div className="household">
-            <House size={21} />
+      <header className="app-header">
+        <div className="app-header-inner">
+          <Link className="app-brand" to="/" aria-label="Pocket Pact home">
+            <img src="/icon.svg" alt="" />
             <span>
-              <strong>Demo household</strong>
-              <small>Ananya & Kunal</small>
+              POCKET<span>PACT</span>
             </span>
-          </div>
-        </div>
-      </aside>
-      <div className="main-shell">
-        <header className="topbar">
-          <span className="breadcrumb">
-            {location.pathname === "/"
-              ? "My week"
-              : (navigation.find((item) => item.to === location.pathname)
-                  ?.label ?? "About Pocket Pact")}
-            <span className="breadcrumb-dot" />
-          </span>
-          <div className="topbar-actions">
+          </Link>
+          <nav className="app-navigation" aria-label="Main navigation">
+            {navigation.map(({ to, label, icon: Icon }) => (
+              <NavLink key={to} to={to}>
+                <Icon size={18} />
+                <span>{label}</span>
+                {to === "/family" && pending > 0 && (
+                  <span className="nav-count">{pending}</span>
+                )}
+              </NavLink>
+            ))}
+          </nav>
+          <div className="app-header-actions">
             <Link
               to="/family"
               className="notification-button"
@@ -100,19 +80,23 @@ export function Shell() {
                 <option value="daughter">Ananya · Daughter</option>
                 <option value="father">Kunal · Dad</option>
               </select>
-              <ChevronDown size={16} aria-hidden="true" />
+              <ChevronDown size={15} aria-hidden="true" />
             </div>
           </div>
-        </header>
+        </div>
+      </header>
+      <div className="main-shell">
+        <div className="app-context">
+          <span>
+            <span className="context-dot" />
+            Ananya & Kunal’s shared space <span className="demo-tag">DEMO</span>
+          </span>
+          <Link to="/about">
+            <CircleHelp size={15} /> How it works
+          </Link>
+        </div>
         <main id="main" tabIndex={-1}>
-          {ready ? (
-            <Outlet />
-          ) : (
-            <div className="loading-state">
-              <Leaf size={30} />
-              <p>Getting your week together…</p>
-            </div>
-          )}
+          <Outlet />
         </main>
         <footer className="page-footer">
           <span>Made for a little more understanding.</span>
