@@ -27,6 +27,8 @@ import {
   X,
 } from "lucide-react";
 
+const STEP_DURATION_MS = 6000;
+
 export const demoSteps = [
   {
     title: "Make a plan together",
@@ -456,7 +458,7 @@ export function PhoneDemo() {
     if (!playing || origin || !visible) return;
     const timer = window.setTimeout(
       () => setStep((current) => (current + 1) % demoSteps.length),
-      9000,
+      STEP_DURATION_MS,
     );
     return () => window.clearTimeout(timer);
   }, [playing, origin, visible, step]);
@@ -511,7 +513,13 @@ export function PhoneDemo() {
                 setPlaying(false);
               }}
             >
-              <span style={{ "--step-duration": "9s" } as CSSProperties} />
+              <span
+                style={
+                  {
+                    "--step-duration": `${STEP_DURATION_MS}ms`,
+                  } as CSSProperties
+                }
+              />
             </button>
           ))}
         </div>
