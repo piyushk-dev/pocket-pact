@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pocket Pact · demo film</title>
+  <style>
+    @font-face { font-family: Manrope; src: url('assets/manrope.woff2') format('woff2'); font-weight: 400 800; }
+    :root { --violet:#5546ea; --deep:#242232; --muted:#676577; --line:#e5e0f4; --soft:#f6f4ff; --amber:#f7e5be; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:1920px; height:1080px; overflow:hidden; font-family:Manrope,Arial,sans-serif; color:var(--deep); background:#fff; }
+    #film { width:1920px; height:1080px; position:relative; overflow:hidden; background:radial-gradient(circle at 86% 18%,#f5f2ff 0,transparent 39%),#fff; }
+    #film::before { content:""; position:absolute; inset:0; opacity:.32; background-image:linear-gradient(#eae7f5 1px,transparent 1px),linear-gradient(90deg,#eae7f5 1px,transparent 1px); background-size:100px 100px; mask-image:linear-gradient(90deg,transparent 2%,black 100%); pointer-events:none; }
+    .scene { position:absolute; inset:0; opacity:0; visibility:hidden; padding:112px 118px 105px; transition:opacity .48s ease,visibility .48s; transform:scale(1.018); }
+    .scene.active { opacity:1; visibility:visible; transform:scale(1); transition:opacity .48s ease,transform .55s ease; }
+    .scene.dark { background:#161321; color:#fff; }
+    .scene.violet { background:#5546ea; color:#fff; }
+    .scene.dark::before,.scene.violet::before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 80% 30%,#8a77fa55,transparent 39%),repeating-linear-gradient(115deg,transparent 0 95px,#ffffff08 96px 97px); }
+    .topbar { position:absolute; z-index:5; left:118px; right:118px; top:50px; display:flex; align-items:center; justify-content:space-between; }
+    .brand { display:flex; align-items:center; gap:15px; font-size:24px; font-weight:800; letter-spacing:.08em; }
+    .brandmark { width:42px; height:42px; border-radius:12px; display:grid; place-items:center; background:var(--violet); color:white; font-size:28px; font-weight:800; letter-spacing:-.12em; box-shadow:0 9px 21px #5546ea29; }
+    .dark .brandmark,.violet .brandmark { background:#fff; color:var(--violet); }
+    .topnote { font-size:21px; font-weight:700; letter-spacing:.11em; color:#77718f; text-transform:uppercase; }
+    .dark .topnote,.violet .topnote { color:#e7e2ff; }
+    .foot { position:absolute; z-index:6; left:118px; right:118px; bottom:45px; display:flex; align-items:center; gap:32px; font-size:19px; color:#827d94; }
+    .dark .foot,.violet .foot { color:#e7e2ff; }
+    .progress { height:6px; flex:1; background:#eae6f8; border-radius:99px; overflow:hidden; }
+    .dark .progress,.violet .progress { background:#ffffff40; }
+    .progress i { display:block; height:100%; width:0; border-radius:99px; background:var(--violet); }
+    .dark .progress i,.violet .progress i { background:#fff; }
+    .eyebrow { display:inline-flex; align-items:center; gap:12px; padding:12px 18px; border-radius:99px; color:var(--violet); background:#f0edff; font-size:21px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+    .dark .eyebrow,.violet .eyebrow { background:#ffffff20; color:#fff; }
+    h1,h2,p { margin:0; }
+    h1 { font-size:102px; line-height:1.06; letter-spacing:-.066em; font-weight:800; }
+    h2 { font-size:74px; line-height:1.11; letter-spacing:-.056em; font-weight:800; }
+    .violet-text { color:var(--violet); }
+    .dark .violet-text,.violet .violet-text { color:#c3b9ff; }
+    .bodycopy { font-size:34px; line-height:1.46; color:#635f72; max-width:850px; }
+    .dark .bodycopy,.violet .bodycopy { color:#e6e0ff; }
+    .smallcopy { font-size:25px; line-height:1.4; color:var(--muted); }
+    .dark .smallcopy,.violet .smallcopy { color:#e1ddf6; }
+    .two { display:grid; grid-template-columns: .97fr 1.03fr; gap:64px; height:100%; align-items:center; }
+    .textcol { display:flex; flex-direction:column; align-items:flex-start; gap:30px; z-index:1; }
+    .screen { border:1px solid #dcd5f5; background:#fff; padding:13px; border-radius:26px; box-shadow:0 35px 90px #3730521e; overflow:hidden; }
+    .screen img { display:block; width:100%; height:100%; object-fit:contain; border-radius:15px; }
+    .screen.wide { width:890px; height:625px; }
+    .screen.wide img { object-fit:cover; object-position:top center; }
+    .screen.wide.shift img { object-position:50% 75%; }
+    .screen.mobile { width:470px; height:704px; margin:auto; padding:9px; border-radius:35px; }
+    .screen.mobile img { object-fit:contain; object-position:center; border-radius:27px; }
+    .pair { display:flex; gap:18px; justify-content:center; align-items:center; }
+    .pair .screen.mobile { width:385px; height:650px; }
+    .pair .screen.mobile img { object-fit:cover; object-position:top; }
+    .pill { display:inline-flex; align-items:center; gap:12px; padding:15px 22px; border-radius:99px; font-size:22px; font-weight:800; color:var(--violet); background:#f1efff; border:1px solid #e2dcff; }
+    .dark .pill { background:#332b4f; color:#fff; border-color:#524278; }
+    .chips { display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; }
+    .number { font-weight:800; font-size:180px; line-height:1; letter-spacing:-.08em; }
+    .callout { background:#f9f5e9; border:1px solid #f0ddb3; border-radius:26px; padding:25px 30px; font-size:27px; font-weight:700; color:#6a4d18; line-height:1.35; }
+    .stack { display:flex; gap:27px; align-items:center; }
+    .stack-card { display:flex; flex-direction:column; gap:18px; padding:30px; width:390px; min-height:300px; background:#fff; color:var(--deep); border:1px solid var(--line); border-radius:28px; box-shadow:0 24px 55px #3a315916; }
+    .stack-card strong { font-size:32px; }
+    .stack-card span { font-size:25px; color:#676176; line-height:1.35; }
+    .stack-card b { font-size:60px; color:var(--violet); }
+    .diagram { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:25px; width:100%; }
+    .diagram-row { display:flex; align-items:center; justify-content:center; gap:20px; width:100%; }
+    .node { background:white; color:var(--deep); border:2px solid #dcd5fa; border-radius:24px; min-width:220px; min-height:105px; padding:22px 26px; display:flex; flex-direction:column; justify-content:center; box-shadow:0 14px 36px #27204424; }
+    .node strong { font-size:28px; line-height:1.2; }
+    .node small { font-size:19px; color:#77708d; margin-top:7px; }
+    .node.prime { background:var(--violet); color:#fff; border-color:#9386ff; }
+    .node.prime small { color:#eeeaff; }
+    .node.future { border-style:dashed; background:#f7f5ff; }
+    .arrow { font-size:43px; font-weight:700; color:#a497e8; line-height:1; }
+    .dark .arrow { color:#c2b7fa; }
+    .diagram-shell { border:2px solid #c8bdff; border-radius:34px; padding:25px 31px 29px; background:#ffffff0f; }
+    .diagram-label { font-size:21px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:#d0c6ff; margin-bottom:17px; }
+    .diagram-shell .node { min-width:230px; }
+    .big-url { font-size:45px; font-weight:800; line-height:1.32; letter-spacing:-.025em; overflow-wrap:anywhere; }
+    .credit-name { font-size:39px; font-weight:700; line-height:1.5; }
+    .credits { padding:36px 46px; background:#ffffff17; border:1px solid #ffffff40; border-radius:28px; min-width:520px; }
+    .credits small { font-size:23px; letter-spacing:.12em; font-weight:800; text-transform:uppercase; color:#ddd7ff; }
+    .panel { border:1px solid var(--line); background:#fff; color:var(--deep); border-radius:32px; padding:42px 48px; box-shadow:0 24px 60px #362c5c16; }
+    .panel h3 { font-size:34px; margin:0 0 13px; }
+    .panel p { font-size:25px; color:var(--muted); line-height:1.45; }
+    .current-note { position:absolute; right:118px; bottom:115px; background:#f7f5ff; border:1px solid #dcd5f5; border-radius:99px; padding:12px 20px; font-size:20px; font-weight:700; color:#5f51c9; }
+    .scene.active .textcol > * { animation:rise .65s both; }
+    .scene.active .textcol > *:nth-child(2) { animation-delay:.10s; }
+    .scene.active .textcol > *:nth-child(3) { animation-delay:.18s; }
+    .scene.active .textcol > *:nth-child(4) { animation-delay:.26s; }
+    .scene.active .screen,.scene.active .stack,.scene.active .diagram { animation:arrive .75s both; animation-delay:.14s; }
+    @keyframes rise { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes arrive { from { opacity:0; transform:translateX(38px) scale(.976); } to { opacity:1; transform:translateX(0) scale(1); } }
+  </style>
+</head>
+<body>
+<main id="film">
+  <section class="scene active" data-duration="5">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">A product demo</span></div>
+    <div class="two"><div class="textcol"><span class="eyebrow">The everyday money story</span><h1>Pocket money.<br><span class="violet-text">Shared understanding.</span></h1><p class="bodycopy">A shared plan that leaves room for independence.</p></div><div class="screen wide"><img src="assets/hero.png"></div></div>
+  </section>
+  <section class="scene violet" data-duration="6">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">01 · The story</span></div>
+    <div class="two"><div class="textcol"><span class="eyebrow">Meet Ananya &amp; Kunal</span><h2>₹1,000 for the week.<br>Her choices.<br>Their conversation.</h2><p class="bodycopy">Kunal supports Ananya at college. They agree on essentials and leave space for real life.</p></div><div style="display:flex;flex-direction:column;gap:25px;align-items:center"><div class="number">₹1,000</div><div class="chips"><span class="pill">Meals ₹450</span><span class="pill">Commute ₹200</span><span class="pill">Study ₹200</span><span class="pill">Her choice ₹150</span></div></div></div>
+  </section>
+  <section class="scene" data-duration="7">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">02 · Shared plan</span></div>
+    <div class="two"><div class="textcol"><span class="eyebrow">Start together</span><h2>A plan for the week.<br><span class="violet-text">Not a spending lock.</span></h2><p class="bodycopy">Ananya sees what is left. Kunal sees the same agreed categories, without taking away her choices.</p><div class="chips"><span class="pill">Wallet owner</span><span class="pill">Supporter</span></div></div><div class="screen wide"><img src="assets/overview.png"></div></div>
+  </section>
+  <section class="scene" data-duration="7">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">03 · Capture</span></div>
+    <div class="two"><div class="textcol"><span class="eyebrow">After a purchase</span><h2>Type it.<br>Snap it.<br><span class="violet-text">Say it.</span></h2><p class="bodycopy">Record an expense with a few words, a photo, or a short voice note. AI helps fill the form.</p><div class="chips"><span class="pill">Gemini photo suggestions</span><span class="pill">Sarvam transcription</span></div></div><div class="screen mobile"><img src="assets/capture.png"></div></div>
+  </section>
+  <section class="scene" data-duration="6">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">04 · Review</span></div>
+    <div class="two"><div class="textcol"><span class="eyebrow">Human in control</span><h2>AI suggests.<br><span class="violet-text">Ananya decides.</span></h2><p class="bodycopy">She checks the amount, category, and fast-food tag before anything is saved or shared.</p><div class="callout">The app does not guess a price from a food photo.</div></div><div class="screen mobile"><img src="assets/review.png"></div></div>
+  </section>
+  <section class="scene" data-duration="7">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">05 · Exceptions</span></div>
+    <div class="two"><div class="textcol"><span class="eyebrow">A gentle flag</span><h2>A third fast-food meal?<br><span class="violet-text">Ask for context.</span></h2><p class="bodycopy">The agreed preference opens a conversation. The expense still gets recorded.</p><div class="callout">“The mess was closed after lab.”</div></div><div class="screen mobile"><img src="assets/flag.png"></div></div>
+  </section>
+  <section class="scene" data-duration="7">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">06 · Talk it through</span></div>
+    <div class="two"><div class="textcol"><span class="eyebrow">Two perspectives</span><h2>Her side.<br>His response.<br><span class="violet-text">One shared picture.</span></h2><p class="bodycopy">Kunal can see the shared photo and note, then acknowledge without rewriting Ananya’s expense.</p></div><div class="pair"><div class="screen mobile"><img src="assets/shared.png"></div><div class="screen mobile"><img src="assets/acknowledged.png"></div></div></div>
+  </section>
+  <section class="scene" data-duration="6">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">07 · Perspective</span></div>
+    <div class="two"><div class="textcol"><span class="eyebrow">Beyond one week</span><h2>Monthly patterns.<br><span class="violet-text">Better next plans.</span></h2><p class="bodycopy">See spending by category, contributions, and conversations. Use the pattern to plan together.</p></div><div class="screen wide"><img src="assets/insights.png"></div></div>
+  </section>
+  <section class="scene" data-duration="6">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">08 · Beyond the demo</span></div>
+    <div class="two"><div class="textcol"><span class="eyebrow">Real people, separate accounts</span><h2>Parents. Guardians.<br><span class="violet-text">Mentors.</span></h2><p class="bodycopy">Create a private wallet, invite the other person, and agree on the plan together.</p><div class="chips"><span class="pill">One-use invite</span><span class="pill">Role-based access</span></div></div><div class="screen wide"><img src="assets/account.png"></div></div>
+  </section>
+  <section class="scene dark" data-duration="7">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">09 · Tech stack</span></div>
+    <div class="textcol" style="margin-bottom:48px"><span class="eyebrow">Build it + ship it</span><h2>Small stack. Clear boundaries.</h2></div>
+    <div class="stack"><div class="stack-card"><b>01</b><strong>React + Vite</strong><span>Fast, decoupled web app</span></div><div class="stack-card"><b>02</b><strong>Fastify + Cedar</strong><span>API, sessions, wallet policy</span></div><div class="stack-card"><b>03</b><strong>PostgreSQL</strong><span>Durable wallets and receipts</span></div><div class="stack-card"><b>04</b><strong>Amazon Lightsail</strong><span>One low-cost server</span></div></div>
+    <p class="smallcopy" style="margin-top:35px">AI adapters: Gemini for opt-in expense suggestions; Sarvam for opt-in transcription.</p>
+  </section>
+  <section class="scene dark" data-duration="9">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">10 · Deployed architecture</span></div>
+    <div class="textcol" style="margin-bottom:39px"><span class="eyebrow">What is live today</span><h2 style="font-size:64px">One Lightsail instance. Three layers.</h2></div>
+    <div class="diagram"><div class="diagram-row"><div class="node"><strong>Browser</strong><small>Owner / supporter</small></div><span class="arrow">→</span><div class="diagram-shell"><div class="diagram-label">Amazon Lightsail · Mumbai · $7 / month</div><div class="diagram-row"><div class="node prime"><strong>Caddy HTTPS</strong><small>static files + API proxy</small></div><span class="arrow">→</span><div style="display:flex;flex-direction:column;gap:10px"><div class="node" style="min-height:78px"><strong>React + Vite</strong><small>static frontend</small></div><div class="node" style="min-height:78px"><strong>Fastify API</strong><small>sessions + logic</small></div></div><span class="arrow">→</span><div class="node"><strong>PostgreSQL</strong><small>wallets + receipts</small></div></div></div></div><div class="diagram-row"><span class="smallcopy" style="color:#ddd6ff">The API uses:</span><div class="node"><strong>Cedar</strong><small>in-process policy</small></div><div class="node"><strong>Gemini</strong><small>opt-in photo help</small></div><div class="node"><strong>Sarvam</strong><small>opt-in voice help</small></div></div></div>
+  </section>
+  <section class="scene" data-duration="6">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">11 · AWS open source</span></div>
+    <div class="two"><div class="textcol"><span class="eyebrow">Build It · Cedar</span><h2>Who can do what?<br><span class="violet-text">Policy answers.</span></h2><p class="bodycopy">Owner records an expense. Supporter records a contribution. Both can propose a pact; the other accepts.</p><div class="callout">Cedar runs inside the API. Unknown actions are denied.</div></div><div class="panel" style="padding:50px"><h3 style="font-size:38px;color:var(--violet)">Wallet policy</h3><div style="font-size:32px;line-height:1.95;font-weight:700">Owner → add expense ✓<br>Supporter → top up ✓<br>Either → propose pact ✓<br>Other wallet → denied ✕</div></div></div>
+  </section>
+  <section class="scene" data-duration="8">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">12 · Growth path</span></div>
+    <div class="textcol" style="margin-bottom:37px"><span class="eyebrow">When scale calls for it</span><h2 style="font-size:65px">Keep the app. Evolve the infrastructure.</h2></div>
+    <div class="diagram"><div class="diagram-row"><div class="node"><strong>Browser</strong></div><span class="arrow">→</span><div class="node prime"><strong>CloudFront</strong><small>edge delivery</small></div><span class="arrow">→</span><div class="node"><strong>Private S3</strong><small>React frontend</small></div></div><div class="diagram-row"><div class="node"><strong>CloudFront / ALB</strong><small>API route</small></div><span class="arrow">→</span><div class="node"><strong>ECS API replicas</strong><small>Fastify + Cedar</small></div><span class="arrow">→</span><div class="node"><strong>RDS PostgreSQL</strong><small>managed database</small></div><span class="arrow">+</span><div class="node"><strong>Private S3</strong><small>receipts</small></div></div></div><div class="current-note">CloudFront is the next deployment step · current site uses Caddy HTTPS</div>
+  </section>
+  <section class="scene violet" data-duration="4">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">13 · What we learned</span></div>
+    <div class="textcol" style="margin-top:175px"><span class="eyebrow">A practical tradeoff</span><h1 style="font-size:100px">Start small.<br>Keep trust at the center.</h1><p class="bodycopy">A low-cost prototype can still have real accounts, durable data, private photos, and explicit access rules.</p></div>
+  </section>
+  <section class="scene dark" data-duration="8">
+    <div class="topbar"><div class="brand"><span class="brandmark">P</span> POCKET PACT</div><span class="topnote">Try it yourself</span></div>
+    <div class="two"><div class="textcol"><span class="eyebrow">Pocket money. Shared understanding.</span><h2 style="font-size:80px">The demo is live.</h2><p class="big-url">https://15.252.126.21.sslip.io</p><p class="big-url" style="font-size:36px;color:#c3b9ff">https://github.com/piyushk-dev/pocket-pact</p></div><div class="credits"><small>Made by</small><div class="credit-name" style="margin-top:25px">Piyush Kumar</div><div class="credit-name">Tanishk Khandelwal</div><div class="credit-name">Khushal Midha</div></div></div>
+  </section>
+  <div class="foot"><span id="chapter">01 / 15</span><div class="progress"><i id="progress-fill"></i></div><span id="clock">00:00</span></div>
+</main>
+<script>
+  const scenes=[...document.querySelectorAll('.scene')];
+  const lengths=scenes.map(el=>Number(el.dataset.duration));
+  const total=lengths.reduce((a,b)=>a+b,0);
+  const starts=lengths.map((_,i)=>lengths.slice(0,i).reduce((a,b)=>a+b,0));
+  let active=-1, started=0, playing=false;
+  window.videoDuration=total;
+  window.seekVideo=function(seconds){
+    const t=Math.min(Math.max(seconds,0),total-0.001);
+    let next=starts.findIndex((s,i)=>t>=s&&t<s+lengths[i]);
+    if(next<0) next=scenes.length-1;
+    if(next!==active){scenes.forEach((s,i)=>s.classList.toggle('active',i===next));active=next;document.getElementById('chapter').textContent=String(next+1).padStart(2,'0')+' / '+scenes.length;}
+    document.getElementById('progress-fill').style.width=(t/total*100)+'%';
+    document.getElementById('clock').textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(Math.floor(t%60)).padStart(2,'0');
+  };
+  window.startVideo=function(){started=performance.now();playing=true;requestAnimationFrame(tick);};
+  function tick(){if(!playing)return;const t=(performance.now()-started)/1000;seekVideo(t);if(t<total)requestAnimationFrame(tick);else playing=false;}
+  const preview=new URLSearchParams(location.search).get('t');seekVideo(preview?Number(preview):0);
+</script>
+</body>
+</html>
