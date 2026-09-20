@@ -27,7 +27,7 @@ import {
   X,
 } from "lucide-react";
 
-const STEP_DURATION_MS = 5000;
+const STEP_DURATION_MS = 2250;
 
 export const demoSteps = [
   {

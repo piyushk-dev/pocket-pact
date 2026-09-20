@@ -40,11 +40,11 @@ Open http://127.0.0.1:5173. Vite proxies `/api` to the independent API on port 3
 
 Passwords use salted scrypt. Session and invite tokens are random, stored as hashes; sessions expire after seven days. The API checks membership and role on every protected route. Images are stored in the database and served through access checks, never through public upload URLs. JSON logs never include credentials. Gemini receives only the description and optional normalized image when requested; audio is sent to Sarvam only for transcription.
 
-For hosting, serve `dist/web` with SPA fallback and proxy `/api` to the API. Configure `APP_ORIGIN` to the browser's exact HTTPS origin and `NODE_ENV=production` for secure cookies. Configure database backups and shared rate limiting before wider public use. This is an application MVP, not a regulated payment wallet. No deployment or real-money integration is included.
+The public prototype runs at **https://15.252.126.21.sslip.io** on a $7/month Amazon Lightsail instance. Caddy serves `dist/web` over HTTPS and proxies `/api` to the local Fastify process; PostgreSQL runs on that instance. The deployment and the planned CloudFront architecture are documented in [deploy/ARCHITECTURE.md](deploy/ARCHITECTURE.md). CloudFront itself is pending AWS account verification. Configure database backups and shared rate limiting before wider public use. This is an application MVP, not a regulated payment wallet; it has no real-money integration.
 
 ## UI
 
-The white/violet landing page preserves the approved design. Its five-scene phone walkthrough uses explicitly fictional examples, five-second playback, pause/chapter controls, reduced motion and a quicker enlarged transition. Expense dialogs open without a full-screen blur. Indian sample photos are credited in [docs/design.md](docs/design.md) and in the sample expense details.
+The white/violet landing page preserves the approved design. Its five-scene phone walkthrough uses explicitly fictional examples, 2.25-second playback, pause/chapter controls, reduced motion and a quicker enlarged transition. Expense dialogs open without a full-screen blur. Indian sample photos are credited in [docs/design.md](docs/design.md) and in the sample expense details.
 
 ## Provenance
 

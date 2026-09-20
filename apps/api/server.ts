@@ -1,3 +1,4 @@
+import { authorized } from "./policy.ts";
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import cookie from "@fastify/cookie";
 import multipart from "@fastify/multipart";
@@ -66,7 +67,7 @@ type Wallet = {
   state: PactState;
 };
 export function buildServer(db: Database) {
-  const app = Fastify({ logger: false, bodyLimit: 7 * 1024 * 1024 });
+  const app = Fastify({ logger: false, trustProxy: "127.0.0.1", bodyLimit: 7 * 1024 * 1024 });
   app.register(cookie);
   app.register(multipart, {
     limits: {
@@ -512,6 +513,8 @@ export function buildServer(db: Database) {
       throw failure("Your active wallet changed. Refresh and try again.", 409);
     const wallet = await getWallet(s);
     const action = body.action;
+    if (!authorized(s.role, s.wallet_id, body.walletId, action.type))
+      throw failure("Your wallet role does not allow this action.", 403);
     if (
       action.type === "add-expense" &&
       wallet.state.expenses.some((e) => e.id === action.expense.id)
@@ -564,9 +567,21 @@ export function buildServer(db: Database) {
   });
   async function ownerSession(req: FastifyRequest) {
     const s = await session(req);
-    if (s.role !== "owner")
+    if (!authorized(s.role, s.wallet_id, s.wallet_id, "upload"))
       throw failure("Only the wallet owner can upload expenses.", 403);
     return s;
+  }
+  async function providerAllowance(provider: string, limit: number) {
+    const result = await db.query(
+      `INSERT INTO provider_usage (day,provider,calls) VALUES (CURRENT_DATE,$1,1)
+      ON CONFLICT (day,provider) DO UPDATE SET calls=provider_usage.calls+1 WHERE provider_usage.calls<$2 RETURNING calls`,
+      [provider, limit],
+    );
+    if (!result.rows.length)
+      throw failure(
+        "The daily AI allowance has been reached. Manual entry is still available.",
+        429,
+      );
   }
   async function readImage(req: FastifyRequest) {
     let description = "";
@@ -617,8 +632,13 @@ export function buildServer(db: Database) {
         throw failure("Add a description or photo first.");
       let analysis;
       try {
+        await providerAllowance(
+          "gemini",
+          Number(process.env.DAILY_AI_LIMIT || 100),
+        );
         analysis = await analyzeExpense(description, image);
       } catch (e) {
+        if ((e as { statusCode?: number }).statusCode === 429) throw e;
         throw failure((e as Error).message, 422);
       }
       return {
@@ -668,8 +688,13 @@ export function buildServer(db: Database) {
       const audio = await file.toBuffer();
       if (!audio.length) throw failure("The recording is empty. Try again.");
       try {
+        await providerAllowance(
+          "sarvam",
+          Number(process.env.DAILY_VOICE_LIMIT || 30),
+        );
         return await transcribeAudio(audio, file.mimetype);
       } catch (e) {
+        if ((e as { statusCode?: number }).statusCode === 429) throw e;
         throw failure((e as Error).message, 422);
       }
     },

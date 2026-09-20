@@ -33,6 +33,7 @@ export async function openDatabase(
     };
   }
   for (const sql of [
+    `CREATE TABLE IF NOT EXISTS provider_usage (day date NOT NULL, provider text NOT NULL, calls integer NOT NULL, PRIMARY KEY(day,provider))`,
     `CREATE TABLE IF NOT EXISTS users (id text PRIMARY KEY, username text UNIQUE NOT NULL, name text NOT NULL, password text NOT NULL)`,
     `CREATE TABLE IF NOT EXISTS wallets (id text PRIMARY KEY, demo boolean NOT NULL, profile jsonb NOT NULL, state jsonb NOT NULL)`,
     `CREATE TABLE IF NOT EXISTS members (wallet_id text REFERENCES wallets(id), user_id text REFERENCES users(id), role text NOT NULL CHECK (role IN ('owner','supporter')), PRIMARY KEY(wallet_id,role), UNIQUE(wallet_id,user_id))`,

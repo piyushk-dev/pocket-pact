@@ -158,7 +158,7 @@ describe("wallet API", () => {
     ).toBe(404);
   });
   it("enforces role permissions for spending and contributions", async () => {
-    expect((await action(payload(), supporterCookie)).statusCode).toBe(400);
+    expect((await action(payload(), supporterCookie)).statusCode).toBe(403);
     expect(
       (
         await action({
@@ -168,7 +168,7 @@ describe("wallet API", () => {
           note: "Weekly support",
         })
       ).statusCode,
-    ).toBe(400);
+    ).toBe(403);
     expect(
       (
         await action(
