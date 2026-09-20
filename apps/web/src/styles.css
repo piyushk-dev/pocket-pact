@@ -318,7 +318,7 @@ select:focus-visible {
 }
 .page {
   padding: 35px 0 22px;
-  animation: arrive 0.28s ease-out;
+  /* Navigation is immediate; motion stays inside the product walkthrough. */
 }
 .page-heading {
   display: flex;

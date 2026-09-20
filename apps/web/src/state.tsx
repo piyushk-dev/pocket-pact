@@ -25,6 +25,14 @@ type Store = SessionState & {
   openCapture: (mode: Store["capture"]) => void;
 };
 const Context = createContext<Store | null>(null);
+// React StrictMode mounts effects twice. Both must use the same new session.
+let bootstrapRequest: Promise<SessionState> | undefined;
+function bootstrapSession() {
+  bootstrapRequest ??= api<SessionState>("/session", {}).finally(() => {
+    bootstrapRequest = undefined;
+  });
+  return bootstrapRequest;
+}
 export function PactProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<SessionState>({
     state: seedState(),
@@ -77,7 +85,7 @@ export function PactProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const sequence = ++requestSequence.current;
     let active = true;
-    void api<SessionState>("/session", {})
+    void bootstrapSession()
       .then((next) => {
         if (active && sequence === requestSequence.current) {
           setSession(next);

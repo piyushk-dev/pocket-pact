@@ -14,16 +14,16 @@ Image generation was unavailable at its usage limit during the redesign. Device 
 - Self-hosted Manrope, 400–700. Bold sans-serif headings and readable tabular money figures. Main app body copy is 15–16px; supporting text is generally 14px, with a 12–13px minimum for compact mobile metadata. The short desktop hero must show the phone playback controls in the initial viewport.
 - Landing: sticky horizontal header, split hero, animated phone, story strip, feature grid, laptop expense preview, three steps, dark CTA, FAQ and footer.
 - Device frames retain a 1:2 outer aspect ratio at every size. Desktop phones grow with the available height; short desktop viewports use a side rail for playback controls instead of compressing the frame. Mobile previews use up to 320px width, and enlarged views retain the same proportions.
-- Five illustrative phone states: weekly plan → meal photo → food-preference suggestion → shared context and acknowledgement → monthly recap. Each scene holds for five seconds. Clicking the phone opens an enlarged, manually navigated story with a spatial transition. Pause when offscreen or expanded; reduced motion starts paused and removes the transition. AI food suggestions and monthly figures are clearly labeled previews, separate from the working app state.
+- Five illustrative phone states: weekly plan → meal photo → food-preference suggestion → shared context and acknowledgement → monthly recap. Each scene holds for five seconds. Clicking the phone opens an enlarged, manually navigated story with a spatial transition. Pause when offscreen or expanded; reduced motion starts paused and removes the transition. Walkthrough figures are clearly labeled sample data, separate from the connected application state.
 - App: horizontal desktop navigation, prominent violet balance card, white expense and pact surfaces, black primary actions. Mobile has a visible persona selector and bottom navigation.
-- Navigation: Overview, Expenses, Our pact, Family. Demo persona selector stays visible.
+- Navigation: Overview, Expenses, Our pact, Together, Insights. Demo persona selector stays visible; real accounts have fixed wallet roles.
 - Lucide outline icons; rounded 18–27px surfaces; subtle borders and shadows.
 
 ## Required supporting states
 
-Add expense uses a focused dialog: input → suggested details → explicit confirmation. Photo, voice and typed entry share the review step. Details remain editable before sharing. Unknown price is left blank. Budget flags are deterministic and remain distinct from planned AI extraction.
+Add expense uses a focused dialog: input → suggested details → explicit confirmation. Photo, voice and typed entry share the review step. Details remain editable before sharing. Unknown price is left blank. Budget flags are deterministic and remain distinct from AI extraction.
 
-Expenses have filters, detail view, context and acknowledgement. A proposed pact change requires the other person's acceptance. Kunal's view emphasizes remaining funds, category totals and shared exceptions. Demo top-ups are bookkeeping, not real transfers. Empty, failure and success states remain available. Backend integrations are deferred until UI review.
+Expenses have filters, detail view, context and acknowledgement. A proposed pact change requires the other person's acceptance. Kunal's view emphasizes remaining funds, category totals and shared exceptions. Demo top-ups are bookkeeping, not real transfers. Empty, failure and success states remain available. The current backend supports accounts, shared wallets, AI capture and monthly insights.
 
 ## Refinement guidance
 
