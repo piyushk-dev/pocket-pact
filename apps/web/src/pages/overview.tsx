@@ -27,7 +27,7 @@ import { ExpenseDetail } from "../components/expense-detail";
 import { TopUpDialog } from "../components/top-up";
 
 export function Overview() {
-  const { state, role, openCapture } = usePact();
+  const { state, role, openCapture, profile } = usePact();
   const [selected, setSelected] = useState<string | null>(null);
   const [topUp, setTopUp] = useState(false);
   const total = funded(state);
@@ -39,24 +39,24 @@ export function Overview() {
       <header className="page-heading">
         <div>
           <h1>
-            {role === "daughter"
+            {role === "owner"
               ? "Your week. Your way."
-              : "A little closer to her week."}
+              : `A little closer to ${profile.owner}’s week.`}
           </h1>
           <p>
-            {role === "daughter"
-              ? "Your week, your choices. A little support from Dad."
-              : "A window into Ananya’s week. Space for her to find her way."}
+            {role === "owner"
+              ? `Your week, your choices. A little support from ${profile.supporter}.`
+              : "A shared picture of the week. Space to make their own choices."}
           </p>
         </div>
         <button
           className="button primary"
           onClick={() =>
-            role === "daughter" ? openCapture("manual") : setTopUp(true)
+            role === "owner" ? openCapture("manual") : setTopUp(true)
           }
         >
           <Plus size={19} />
-          {role === "daughter" ? "Add expense" : "Record top-up"}
+          {role === "owner" ? "Add expense" : "Record top-up"}
         </button>
       </header>
       <div className="overview-grid">
@@ -74,7 +74,9 @@ export function Overview() {
               </span>
             </div>
             <div className="balance-number">{money(Math.abs(remaining))}</div>
-            <p className="balance-subtitle">of {money(total)} from Dad</p>
+            <p className="balance-subtitle">
+              of {money(total)} from {profile.supporter}
+            </p>
             <div
               className="spending-bar"
               role="meter"
@@ -117,9 +119,9 @@ export function Overview() {
         <aside className="overview-aside">
           <section className="pact-summary">
             <h2>
-              {role === "daughter"
-                ? "Your pact with Dad"
-                : "Your pact with Ananya"}
+              {role === "owner"
+                ? `Your pact with ${profile.supporter}`
+                : `Your pact with ${profile.owner}`}
             </h2>
             <p>A plan you made together.</p>
             <div className="pact-mini-list">
@@ -147,12 +149,12 @@ export function Overview() {
                 {pending.length}{" "}
                 {pending.length === 1 ? "expense needs" : "expenses need"} a
                 conversation.{" "}
-                {role === "daughter"
+                {role === "owner"
                   ? "Your context is part of the story."
-                  : "Start with Ananya’s side of the story."}
+                  : `Start with ${profile.owner}’s side of the story.`}
               </p>
               <Link className="text-link" to="/family">
-                {role === "daughter" ? "See what’s shared" : "Open your inbox"}{" "}
+                {role === "owner" ? "See what’s shared" : "Open your inbox"}{" "}
                 <ArrowRight size={16} />
               </Link>
             </section>
@@ -168,7 +170,7 @@ export function Overview() {
           )}
         </aside>
       </div>
-      {role === "daughter" ? (
+      {role === "owner" ? (
         <section className="capture-strip">
           <span className="capture-symbol">
             <Camera size={28} />
@@ -194,14 +196,15 @@ export function Overview() {
           </div>
         </section>
       ) : (
-        <section className="capture-strip father-strip">
+        <section className="capture-strip supporter-strip">
           <span className="capture-symbol">
             <Heart size={27} />
           </span>
           <div>
             <h2>Support, with space to grow.</h2>
             <p>
-              Ananya makes the choices. Your pact keeps the conversation open.
+              {profile.owner} makes the choices. Your pact keeps the
+              conversation open.
             </p>
           </div>
           <Link to="/family" className="text-link">

@@ -32,6 +32,7 @@ type Analysis = {
   source: "gemini" | "manual";
   receiptId?: string;
   warning?: string;
+  fastFood: boolean;
 };
 
 export function ExpenseDialog({
@@ -41,7 +42,7 @@ export function ExpenseDialog({
   mode: CaptureMode;
   onClose: () => void;
 }) {
-  const { state, act, busy } = usePact();
+  const { state, act, busy, profile } = usePact();
   const [mode, setMode] = useState(initialMode);
   const [step, setStep] = useState<"capture" | "review">("capture");
   const [description, setDescription] = useState("");
@@ -63,6 +64,8 @@ export function ExpenseDialog({
   });
   const [note, setNote] = useState("");
   const [shareReceipt, setShareReceipt] = useState(false);
+  const [fastFood, setFastFood] = useState(false);
+  const attachedId = useRef<string | undefined>(undefined);
   const [recording, setRecording] = useState(false);
   const recorder = useRef<MediaRecorder | null>(null);
   const stream = useRef<MediaStream | null>(null);
@@ -90,7 +93,7 @@ export function ExpenseDialog({
   const amountPaise = Math.round(Number(amount) * 100);
   const flags =
     Number.isFinite(amountPaise) && amountPaise > 0
-      ? reviewExpense(state, { amount: amountPaise, category })
+      ? reviewExpense(state, { amount: amountPaise, category, fastFood })
       : [];
 
   function selectFile(next?: File) {
@@ -103,6 +106,8 @@ export function ExpenseDialog({
       return;
     }
     setFile(next);
+    attachedId.current = undefined;
+    setAnalysis(null);
     setPreview(URL.createObjectURL(next));
     setError("");
   }
@@ -126,6 +131,8 @@ export function ExpenseDialog({
             "Could not read this expense. You can still enter the details yourself.",
         );
       setAnalysis(data);
+      attachedId.current = data.receiptId;
+      setFastFood(data.fastFood ?? false);
       setMerchant(data.merchant || "");
       setAmount(data.amount === null ? "" : String(data.amount / 100));
       setCategory(data.category);
@@ -209,7 +216,7 @@ export function ExpenseDialog({
       setRecording(true);
       recordTimer.current = setTimeout(() => {
         if (rec.state === "recording") rec.stop();
-      }, 45_000);
+      }, 25_000);
     } catch (e) {
       stream.current?.getTracks().forEach((track) => track.stop());
       setError(
@@ -229,20 +236,36 @@ export function ExpenseDialog({
       date,
       note,
       shareReceipt,
+      fastFood,
       source: analysis?.source ?? "manual",
-      evidence: analysis?.evidence ?? "none",
+      evidence: analysis?.evidence ?? (file ? "photo" : "none"),
       ...(analysis?.receiptId ? { receiptId: analysis.receiptId } : {}),
     };
     try {
+      setLoading(true);
+      if (file && !attachedId.current) {
+        const body = new FormData();
+        body.append("image", file);
+        const response = await fetch("/api/receipts", { method: "POST", body });
+        const uploaded = await response.json();
+        if (!response.ok)
+          throw new Error(
+            uploaded.error || "Could not attach the photo. Try again.",
+          );
+        attachedId.current = uploaded.receiptId;
+      }
+      if (attachedId.current) expense.receiptId = attachedId.current;
       await act(
         { type: "add-expense", expense },
         flags.length
-          ? "Expense saved. Kunal can see the exception and your context."
+          ? `Expense saved. ${profile.supporter} can see the exception and your context.`
           : "Expense saved. Your week is up to date.",
       );
       onClose();
     } catch (e) {
       setError((e as Error).message);
+    } finally {
+      setLoading(false);
     }
   }
   return (
@@ -318,6 +341,8 @@ export function ExpenseDialog({
                       className="text-button"
                       onClick={() => {
                         setFile(null);
+                        attachedId.current = undefined;
+                        setAnalysis(null);
                         setPreview("");
                         if (upload.current) upload.current.value = "";
                       }}
@@ -371,7 +396,7 @@ export function ExpenseDialog({
                     ? "Turning your words into text…"
                     : "Your words are enough."}
               </strong>
-              <span>Hindi, Hinglish or English · up to 45 seconds</span>
+              <span>Hindi, Hinglish or English · up to 25 seconds</span>
             </div>
           )}
           <label className="field">
@@ -419,7 +444,8 @@ export function ExpenseDialog({
           <ErrorMessage message={error} />
           <p className="privacy-note">
             <ShieldCheck size={15} />
-            Nothing is shared with Dad until you review and save.
+            Nothing is shared with {profile.supporter} until you review and
+            save.
           </p>
           <div className="modal-actions">
             <button
@@ -509,6 +535,20 @@ export function ExpenseDialog({
               required
             />
           </label>
+          <label className="checkbox-field">
+            <input
+              type="checkbox"
+              checked={fastFood}
+              onChange={(e) => setFastFood(e.target.checked)}
+            />
+            <span>
+              This was a fast-food meal
+              <small>
+                {analysis ? "Check this suggestion before saving. " : ""}Used
+                only for your agreed weekly preference.
+              </small>
+            </span>
+          </label>
           {flags.length > 0 ? (
             <div className="review-box">
               <span className="review-symbol">!</span>
@@ -517,7 +557,10 @@ export function ExpenseDialog({
                 {flags.map((flag) => (
                   <p key={flag}>{flag}</p>
                 ))}
-                <small>Save it with a note. Kunal will see it in Family.</small>
+                <small>
+                  Save it with a note. {profile.supporter} will see it in
+                  Together.
+                </small>
               </div>
             </div>
           ) : (
@@ -530,7 +573,7 @@ export function ExpenseDialog({
           )}
           <label className="field">
             {flags.length
-              ? "What would you like Dad to know? (optional)"
+              ? `What would you like ${profile.supporter} to know? (optional)`
               : "A note for later (optional)"}
             <textarea
               value={note}
@@ -540,7 +583,7 @@ export function ExpenseDialog({
               placeholder="A little context goes a long way."
             />
           </label>
-          {analysis?.receiptId && (
+          {(file || analysis?.receiptId) && (
             <label className="checkbox-field">
               <input
                 type="checkbox"
@@ -548,7 +591,7 @@ export function ExpenseDialog({
                 onChange={(e) => setShareReceipt(e.target.checked)}
               />
               <span>
-                Share this attachment with Kunal
+                Share this attachment with {profile.supporter}
                 <small>
                   Your amount, category and note are already part of the shared
                   pact.
@@ -558,8 +601,8 @@ export function ExpenseDialog({
           )}
           {file && !analysis?.receiptId && (
             <p className="subtle-note">
-              This photo hasn’t been attached. Go back and use “Read my expense”
-              to include it.
+              Your photo will be attached when you save. You can enter details
+              without AI.
             </p>
           )}
           <ErrorMessage message={error} />
@@ -567,6 +610,7 @@ export function ExpenseDialog({
             <button
               type="button"
               className="text-button"
+              disabled={loading || busy}
               onClick={() => {
                 setStep("capture");
                 setError("");
@@ -575,8 +619,8 @@ export function ExpenseDialog({
               <ArrowLeft size={16} />
               Back
             </button>
-            <button className="button primary" disabled={busy}>
-              {busy ? (
+            <button className="button primary" disabled={busy || loading}>
+              {busy || loading ? (
                 <LoaderCircle size={16} className="spin" />
               ) : (
                 <Check size={17} />

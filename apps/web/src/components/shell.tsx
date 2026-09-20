@@ -1,5 +1,6 @@
 import {
   Bell,
+  BarChart3,
   ChevronDown,
   Handshake,
   House,
@@ -18,10 +19,25 @@ const navigation = [
   { to: "/app", label: "Overview", icon: House },
   { to: "/expenses", label: "Expenses", icon: ReceiptText },
   { to: "/pact", label: "Our pact", icon: Handshake },
-  { to: "/family", label: "Family", icon: Users },
+  { to: "/family", label: "Together", icon: Users },
+  { to: "/insights", label: "Insights", icon: BarChart3 },
 ];
 export function Shell() {
-  const { role, switchRole, state, toast, capture, openCapture } = usePact();
+  const {
+    role,
+    switchRole,
+    state,
+    toast,
+    capture,
+    openCapture,
+    profile,
+    demo,
+    ready,
+    busy,
+    connectionError,
+    refresh,
+    walletId,
+  } = usePact();
   const location = useLocation();
   const pending =
     pendingExpenses(state).length +
@@ -59,7 +75,7 @@ export function Shell() {
               to="/family"
               className="notification-button"
               aria-label={
-                pending ? `${pending} updates in Family` : "Family updates"
+                pending ? `${pending} updates in Together` : "Shared updates"
               }
             >
               <Bell size={19} />
@@ -67,20 +83,28 @@ export function Shell() {
             </Link>
             <div className="persona">
               <span className={`avatar ${role}`}>
-                {role === "daughter" ? "A" : "K"}
+                {profile[role].slice(0, 1)}
               </span>
               <label className="sr-only" htmlFor="persona">
                 Demo perspective
               </label>
-              <select
-                id="persona"
-                value={role}
-                onChange={(e) => void switchRole(e.target.value as Role)}
-              >
-                <option value="daughter">Ananya · Daughter</option>
-                <option value="father">Kunal · Dad</option>
-              </select>
-              <ChevronDown size={15} aria-hidden="true" />
+              {demo ? (
+                <select
+                  disabled={busy}
+                  id="persona"
+                  value={role}
+                  onChange={(e) => void switchRole(e.target.value as Role)}
+                >
+                  <option value="owner">Ananya · Owner</option>
+                  <option value="supporter">Kunal · Parent</option>
+                </select>
+              ) : (
+                <Link to="/account">
+                  {profile[role]} ·{" "}
+                  {role === "owner" ? "Owner" : profile.relationship}
+                </Link>
+              )}
+              {demo && <ChevronDown size={15} aria-hidden="true" />}
             </div>
           </div>
         </div>
@@ -89,18 +113,39 @@ export function Shell() {
         <div className="app-context">
           <span>
             <span className="context-dot" />
-            Ananya & Kunal’s shared space <span className="demo-tag">DEMO</span>
+            {profile.owner} & {profile.supporter}’s shared space{" "}
+            {demo && <span className="demo-tag">DEMO</span>}
           </span>
-          <Link to="/about">
-            <CircleHelp size={15} /> How it works
+          <Link to="/account">
+            <CircleHelp size={15} />{" "}
+            {demo ? "Create your wallet / Sign in" : "Manage wallets"}
           </Link>
         </div>
         <main id="main" tabIndex={-1}>
-          <Outlet />
+          {connectionError && (
+            <div className="connection-error" role="alert">
+              {connectionError}{" "}
+              <button className="text-button" onClick={() => void refresh()}>
+                Retry connection
+              </button>
+            </div>
+          )}
+          {ready ? (
+            <Outlet key={`${walletId}:${role}`} />
+          ) : (
+            !connectionError && (
+              <div className="page" role="status">
+                Opening your shared space…
+              </div>
+            )
+          )}
         </main>
         <footer className="page-footer">
           <span>Made for a little more understanding.</span>
-          <span>Demo money · No bank account connected</span>
+          <span>
+            {demo ? "Example wallet" : "Expense tracking"} · No bank account
+            connected
+          </span>
         </footer>
       </div>
       {toast && (

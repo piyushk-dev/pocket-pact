@@ -32,3 +32,16 @@ This iteration uses [Astra Frontend Design](https://github.com/Enixes/astra-fron
 ## Image credit
 
 The illustrative meal photo is by [Robin Stickel on Unsplash](https://unsplash.com/photos/tzl1UCXg5Es), used under the [Unsplash License](https://unsplash.com/license). The local asset is `apps/web/public/images/meal-example.webp`. Amounts, people, food preferences and monthly figures in the walkthrough are fictional examples, not facts inferred from the stock photo.
+
+## Connected application milestone
+
+The API is now connected. Actual wallets use owner/supporter roles with configurable names and Parent, Guardian, Mentor or Other relationships; the landing story remains Ananya and Kunal. Navigation adds Together, Insights and account/wallet management. Photo suggestions, shared fast-food preferences, receipts and monthly analytics use persisted application data. The animated phone still shows a labeled fictional example.
+
+Expense dialogs use an unblurred translucent backdrop and open before paint; the phone enlargement takes 260 ms. Sample expense photos reserve their frame to avoid image-loading layout shifts.
+
+Additional Unsplash assets, used under the [Unsplash License](https://unsplash.com/license):
+
+- `auto-example.webp`: [Prabhav Kashyap Godavarthy — auto rickshaw in Hyderabad](https://unsplash.com/photos/1XJt1RpU5FI).
+- `thali-example.webp`: [Zoshua Colah — Indian thali](https://unsplash.com/photos/dncjnYtmWHo).
+
+These are illustrative sample photos, not receipts or evidence of the fictional expenses. Real user entries never receive stock photos automatically.

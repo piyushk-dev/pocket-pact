@@ -12,7 +12,7 @@ import { ExpenseList } from "../components/expense-list";
 import { ExpenseDetail } from "../components/expense-detail";
 
 export function Expenses() {
-  const { state, role, openCapture } = usePact();
+  const { state, role, openCapture, profile } = usePact();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<Category | "all">("all");
   const [status, setStatus] = useState("all");
@@ -63,12 +63,12 @@ export function Expenses() {
         <div>
           <h1>Little entries. The whole picture.</h1>
           <p>
-            {role === "daughter"
+            {role === "owner"
               ? "Everything you’ve recorded, with your side of the story."
-              : "Ananya’s week, in her own words."}
+              : `${profile.owner}’s week, in their own words.`}
           </p>
         </div>
-        {role === "daughter" && (
+        {role === "owner" && (
           <button
             className="button primary"
             onClick={() => openCapture("manual")}
@@ -129,7 +129,7 @@ export function Expenses() {
       </div>
       <p className="ledger-count">
         {filtered.length} of {state.expenses.length} expenses · Amounts are
-        recorded by Ananya.
+        recorded by {profile.owner}.
       </p>
       {selected && (
         <ExpenseDetail id={selected} onClose={() => setSelected(null)} />

@@ -307,7 +307,7 @@ select:focus-visible {
   font-weight: 600;
   flex-shrink: 0;
 }
-.avatar.father {
+.avatar.supporter {
   background: #e4decf;
   color: #725c3e;
 }
@@ -715,7 +715,7 @@ select:focus-visible {
   min-height: 43px;
   font-size: 14px;
 }
-.father-strip > .text-link {
+.supporter-strip > .text-link {
   margin-left: auto;
 }
 .page-footer {
@@ -1219,7 +1219,7 @@ select:focus-visible {
 }
 .modal::backdrop {
   background: #3d2ab266;
-  backdrop-filter: blur(4px);
+  backdrop-filter: none;
 }
 .modal-inner {
   padding: 27px 29px;
@@ -1639,7 +1639,7 @@ select:focus-visible {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
-.father-note {
+.supporter-note {
   background: #f0ece2;
 }
 .receipt-detail {
@@ -2293,7 +2293,7 @@ select:focus-visible {
     font-size: 14px;
     padding: 11px 8px;
   }
-  .father-strip > .text-link {
+  .supporter-strip > .text-link {
     margin-left: 54px;
   }
   .page-footer {

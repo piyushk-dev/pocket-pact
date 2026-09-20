@@ -52,7 +52,7 @@ export function About() {
         <details>
           <summary>Does Pocket Pact hold or transfer money?</summary>
           <p>
-            No. This version records demo funds and expenses. It is not a
+            No. Pocket Pact records contributions and expenses. It is not a
             wallet, payment account or banking service.
           </p>
         </details>
@@ -65,10 +65,10 @@ export function About() {
           </p>
         </details>
         <details>
-          <summary>What does Dad get to see?</summary>
+          <summary>What does a supporter get to see?</summary>
           <p>
             Your saved expenses, categories and notes. Attachments stay private
-            unless you choose to share them. Exceptions appear in the Family
+            unless you choose to share them. Exceptions appear in the Together
             inbox; there are no external email or WhatsApp notifications.
           </p>
         </details>
@@ -76,18 +76,18 @@ export function About() {
           <summary>How does the demo work?</summary>
           <p>
             Ananya and Kunal are fictional. Switch perspectives in the top-right
-            menu to explore both sides. This is a shared demo session, not two
-            independently authenticated accounts. Sample expenses are labeled in
-            their details.
+            menu to explore both sides. The example is a shared demo session.
+            Create your own wallet for separate accounts, and invite a parent,
+            guardian or mentor. Sample expenses and stock photos are labeled.
           </p>
         </details>
         <details>
           <summary>What gets sent to AI providers?</summary>
           <p>
-            AI providers are not connected in this UI preview. Planned
-            integrations include Gemini for receipt suggestions and Sarvam for
-            voice transcription. Use manual entry or sample expenses to explore
-            the complete flow today.
+            When you choose “Read my expense”, your description and optional
+            photo go to Gemini for suggestions. Voice recordings go to Sarvam
+            for transcription. Manual entry needs neither provider. Photos stay
+            private from your supporter unless you share them.
           </p>
         </details>
         <details>

@@ -8,7 +8,7 @@ export const categories = [
   "other",
 ] as const;
 export type Category = (typeof categories)[number];
-export type Role = "daughter" | "father";
+export type Role = "owner" | "supporter";
 export const categoryLabels: Record<Category, string> = {
   meals: "Meals",
   commute: "Commute",
@@ -23,7 +23,7 @@ export const categoryDescriptions: Record<Category, string> = {
   personal: "Coffee, outings & whatever you choose",
   other: "Something you haven’t planned for",
 };
-export const person = { daughter: "Ananya", father: "Kunal" };
+export const person = { owner: "Ananya", supporter: "Kunal" };
 export const money = (paise: number) =>
   new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -50,6 +50,7 @@ export type Expense = {
   evidence: "receipt" | "photo" | "none";
   receiptId?: string;
   shareReceipt: boolean;
+  fastFood: boolean;
   flags: string[];
   acknowledged: boolean;
   reply: string;
@@ -60,6 +61,7 @@ export type PactState = {
   weekStart: string;
   budgets: Budgets;
   pactVersion: number;
+  fastFoodLimit: number | null;
   contributions: { id: string; amount: number; note: string; at: string }[];
   expenses: Expense[];
   proposal: {
@@ -68,6 +70,7 @@ export type PactState = {
     budgets: Budgets;
     note: string;
     baseVersion: number;
+    fastFoodLimit: number | null;
   } | null;
 };
 
@@ -82,6 +85,7 @@ export const expenseSchema = z.object({
   evidence: z.enum(["receipt", "photo", "none"]).default("none"),
   receiptId: z.string().uuid().optional(),
   shareReceipt: z.boolean().default(false),
+  fastFood: z.boolean().default(false),
 });
 export type ExpenseInput = z.infer<typeof expenseSchema>;
 export const actionSchema = z.discriminatedUnion("type", [
@@ -102,6 +106,7 @@ export const actionSchema = z.discriminatedUnion("type", [
     budgets: budgetsSchema,
     note: z.string().trim().min(1).max(600),
     baseVersion: z.number().int(),
+    fastFoodLimit: z.number().int().min(0).max(21).nullable(),
   }),
   z.object({ type: z.literal("accept-pact"), id: z.string() }),
   z.object({ type: z.literal("dismiss-pact"), id: z.string() }),
@@ -161,6 +166,7 @@ export function seedState(now = new Date()): PactState {
     weekStart: start,
     budgets: { meals: 45000, commute: 20000, study: 20000, personal: 15000 },
     pactVersion: 1,
+    fastFoodLimit: 2,
     proposal: null,
     contributions: [
       {
@@ -180,6 +186,7 @@ export function seedState(now = new Date()): PactState {
       source: "sample",
       evidence: "none",
       shareReceipt: false,
+      fastFood: false,
       flags: [],
       acknowledged: false,
       reply: "",
@@ -190,7 +197,7 @@ export function seedState(now = new Date()): PactState {
 
 export function reviewExpense(
   state: PactState,
-  expense: Pick<ExpenseInput, "amount" | "category">,
+  expense: Pick<ExpenseInput, "amount" | "category"> & { fastFood?: boolean },
 ): string[] {
   const flags: string[] = [];
   if (expense.category === "other")
@@ -207,6 +214,14 @@ export function reviewExpense(
     flags.push(
       `Recorded spending would exceed this week’s funds by ${money(spent(state) + expense.amount - funded(state))}.`,
     );
+  if (
+    expense.fastFood &&
+    state.fastFoodLimit !== null &&
+    state.expenses.filter((e) => e.fastFood).length >= state.fastFoodLimit
+  )
+    flags.push(
+      `This is above your agreed ${state.fastFoodLimit} fast-food meals this week. Add context for your supporter.`,
+    );
   return flags;
 }
 
@@ -219,8 +234,8 @@ export function applyAction(
   const action = actionSchema.parse(raw);
   const state = structuredClone(current);
   if (action.type === "add-expense") {
-    if (role !== "daughter")
-      throw new Error("Only Ananya can record her expenses.");
+    if (role !== "owner")
+      throw new Error("Only the wallet owner can record expenses.");
     if (state.expenses.some((e) => e.id === action.expense.id)) return current;
     if (
       action.expense.date < state.weekStart ||
@@ -238,13 +253,13 @@ export function applyAction(
     const expense = state.expenses.find((e) => e.id === action.id);
     if (!expense) throw new Error("Expense not found.");
     if (action.type === "add-context") {
-      if (role !== "daughter")
-        throw new Error("Only Ananya can explain her expense.");
+      if (role !== "owner")
+        throw new Error("Only the wallet owner can add context.");
       expense.note = action.note;
       if (expense.flags.length) expense.acknowledged = false;
     } else {
-      if (role !== "father")
-        throw new Error("Switch to Kunal’s view to acknowledge this expense.");
+      if (role !== "supporter")
+        throw new Error("Only a supporter can acknowledge an expense.");
       if (!expense.flags.length)
         throw new Error("This expense does not need a review.");
       expense.acknowledged = true;
@@ -265,6 +280,7 @@ export function applyAction(
       budgets: action.budgets,
       note: action.note,
       baseVersion: state.pactVersion,
+      fastFoodLimit: action.fastFoodLimit,
     };
   } else if (action.type === "accept-pact" || action.type === "dismiss-pact") {
     if (!state.proposal || state.proposal.id !== action.id)
@@ -275,12 +291,13 @@ export function applyAction(
       if (state.proposal.baseVersion !== state.pactVersion)
         throw new Error("The pact has changed. Make a fresh proposal.");
       state.budgets = state.proposal.budgets;
+      state.fastFoodLimit = state.proposal.fastFoodLimit;
       state.pactVersion += 1;
     }
     state.proposal = null;
   } else if (action.type === "top-up") {
-    if (role !== "father")
-      throw new Error("Switch to Kunal’s view to record a top-up.");
+    if (role !== "supporter")
+      throw new Error("Only a supporter can record a contribution.");
     if (state.contributions.some((e) => e.id === action.id)) return current;
     state.contributions.push({
       id: action.id,

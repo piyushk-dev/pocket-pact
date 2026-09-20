@@ -651,7 +651,7 @@
 }
 .walkthrough-modal::backdrop {
   background: #1e183466;
-  backdrop-filter: blur(7px);
+  backdrop-filter: none;
 }
 .walkthrough-modal-inner {
   padding: 38px;

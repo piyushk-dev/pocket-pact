@@ -11,20 +11,20 @@ export function ExpenseDetail({
   id: string;
   onClose: () => void;
 }) {
-  const { state, role, act, busy } = usePact();
+  const { state, role, act, busy, profile } = usePact();
   const expense = state.expenses.find((e) => e.id === id)!;
-  const [note, setNote] = useState(role === "daughter" ? expense.note : "");
+  const [note, setNote] = useState(role === "owner" ? expense.note : "");
   const [error, setError] = useState("");
   async function save() {
     setError("");
     try {
       await act(
-        role === "daughter"
+        role === "owner"
           ? { type: "add-context", id, note }
           : { type: "acknowledge", id, reply: note },
-        role === "daughter"
-          ? "Your context is shared with Kunal."
-          : "Ananya can see your acknowledgement.",
+        role === "owner"
+          ? `Your context is shared with ${profile.supporter}.`
+          : `${profile.owner} can see your acknowledgement.`,
       );
       onClose();
     } catch (e) {
@@ -48,6 +48,43 @@ export function ExpenseDetail({
         <strong>{money(expense.amount)}</strong>
       </div>
       <Status expense={expense} />
+      {expense.source === "sample" &&
+        (expense.category === "meals" || expense.category === "commute") && (
+          <figure className="expense-photo">
+            <img
+              src={`/images/${expense.category === "commute" ? "auto" : "thali"}-example.webp`}
+              alt={
+                expense.category === "commute"
+                  ? "A yellow and black auto rickshaw on an Indian street"
+                  : "An Indian thali with rice, chapati and small bowls of dal and curry"
+              }
+              width="900"
+              height="480"
+            />
+            <figcaption>
+              Example photo ·{" "}
+              {expense.category === "commute"
+                ? "An everyday ride to college"
+                : "A little taste of home"}
+              <a
+                href={
+                  expense.category === "commute"
+                    ? "https://unsplash.com/photos/1XJt1RpU5FI"
+                    : "https://unsplash.com/photos/dncjnYtmWHo"
+                }
+                target="_blank"
+                rel="noreferrer"
+              >
+                Photo credit ↗
+              </a>
+            </figcaption>
+          </figure>
+        )}
+      {expense.fastFood && (
+        <p className="subtle-note">
+          Fast-food meal · confirmed by {profile.owner}
+        </p>
+      )}
       {!!expense.flags.length && (
         <div className="review-box">
           <MessageCircle size={20} />
@@ -64,19 +101,23 @@ export function ExpenseDetail({
       )}
       {expense.note && (
         <div className="message-note">
-          <span className="avatar daughter small">A</span>
+          <span className="avatar owner small">
+            {profile.owner.slice(0, 1)}
+          </span>
           <div>
-            <strong>Ananya’s note</strong>
+            <strong>{profile.owner}’s note</strong>
             <p>{expense.note}</p>
           </div>
         </div>
       )}
       {expense.acknowledged && (
-        <div className="message-note father-note">
-          <span className="avatar father small">K</span>
+        <div className="message-note supporter-note">
+          <span className="avatar supporter small">
+            {profile.supporter.slice(0, 1)}
+          </span>
           <div>
             <strong>
-              Kunal acknowledged this <Check size={14} />
+              {profile.supporter} acknowledged this <Check size={14} />
             </strong>
             <p>{expense.reply || "Thanks for keeping me in the loop."}</p>
           </div>
@@ -87,25 +128,25 @@ export function ExpenseDetail({
           <strong>
             {expense.evidence === "receipt" ? "Receipt" : "Photo"}
           </strong>
-          {role === "daughter" || expense.shareReceipt ? (
+          {role === "owner" || expense.shareReceipt ? (
             <img
               src={`/api/receipts/${expense.receiptId}`}
               alt={`Attachment for ${expense.merchant}`}
             />
           ) : (
-            <p>Ananya has kept this attachment private.</p>
+            <p>{profile.owner} has kept this attachment private.</p>
           )}
         </div>
       )}
       <p className="subtle-note">
         <ShieldCheck size={15} />{" "}
         {expense.source === "gemini"
-          ? "AI-assisted details, confirmed by Ananya."
+          ? `AI-assisted details, confirmed by ${profile.owner}.`
           : expense.source === "sample"
             ? "Sample expense for this demo household."
-            : "Details entered and confirmed by Ananya."}
+            : `Details entered and confirmed by ${profile.owner}.`}
       </p>
-      {(role === "daughter" ||
+      {(role === "owner" ||
         (!!expense.flags.length && !expense.acknowledged)) && (
         <form
           onSubmit={(e) => {
@@ -114,20 +155,20 @@ export function ExpenseDetail({
           }}
         >
           <label className="field">
-            {role === "daughter"
-              ? "Add a little context for Dad"
-              : "A note for Ananya (optional)"}
+            {role === "owner"
+              ? `Add a little context for ${profile.supporter}`
+              : `A note for ${profile.owner} (optional)`}
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               maxLength={600}
               rows={3}
               placeholder={
-                role === "daughter"
-                  ? "What would you like him to know?"
+                role === "owner"
+                  ? "What would you like them to know?"
                   : "Thanks for explaining. Glad you got home safely."
               }
-              required={role === "daughter"}
+              required={role === "owner"}
             />
           </label>
           <ErrorMessage message={error} />
@@ -140,7 +181,7 @@ export function ExpenseDetail({
               Close
             </button>
             <button className="button primary" disabled={busy}>
-              {role === "daughter" ? "Share context" : "Acknowledge expense"}
+              {role === "owner" ? "Share context" : "Acknowledge expense"}
             </button>
           </div>
         </form>

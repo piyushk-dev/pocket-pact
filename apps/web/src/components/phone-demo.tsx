@@ -326,7 +326,7 @@ function WalkthroughDialog({
           },
           { transform: "none" },
         ],
-        { duration: 440, easing: "cubic-bezier(.2,.8,.2,1)" },
+        { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" },
       );
     }
     return () => {
@@ -349,7 +349,7 @@ function WalkthroughDialog({
         { opacity: 1, transform: "scale(1)" },
         { opacity: 0, transform: "scale(.97)" },
       ],
-      { duration: 160, easing: "ease-in", fill: "forwards" },
+      { duration: 110, easing: "ease-in", fill: "forwards" },
     );
     if (animation) void animation.finished.then(onClose, onClose);
     else onClose();
@@ -421,8 +421,8 @@ function WalkthroughDialog({
             )}
           </div>
           <p className="walkthrough-disclosure">
-            Illustrative product preview. AI food suggestions and monthly
-            insights are not connected in the current web app.
+            Illustrative story with sample amounts. Create your own wallet to
+            use photo suggestions, shared preferences and monthly insights.
           </p>
         </div>
       </div>

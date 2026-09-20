@@ -28,7 +28,7 @@ import "../walkthrough.css";
 const faqs = [
   [
     "What is Pocket Pact?",
-    "A shared pocket-money planner for a student and their parent. Set a weekly plan, record expenses, and add context when something falls outside it. Ananya and Kunal are the fictional family in our demo.",
+    "A shared pocket-money planner for wallet owners and the parents, guardians or mentors supporting them. Set a weekly plan, record expenses, and add context when something falls outside it. Ananya and Kunal are the fictional family in our demo.",
   ],
   [
     "Can a parent control or block spending?",
@@ -36,19 +36,19 @@ const faqs = [
   ],
   [
     "What happens when an expense is outside the plan?",
-    "The app compares it with the agreed categories and budgets. Ananya can add a note before saving. Kunal sees the exception and her context in the Family inbox, where he can reply and acknowledge it.",
+    "The app compares it with the agreed categories and budgets. Ananya can add a note before saving. Kunal sees the exception and her context in the Together inbox, where he can reply and acknowledge it.",
   ],
   [
     "How do photo suggestions and food flags work?",
-    "The product preview shows AI suggesting a food category from a photo and checking it against preferences you agree on together. Ananya reviews or corrects the suggestion, adds the amount and chooses what to share. A photo cannot prove a price or diagnose eating habits. AI and food-preference flags are planned integrations; manual expense entry and budget flags work in the current web app.",
+    "AI suggests an expense category from your photo. Confirm or correct it, and the app checks your saved entry against the preferences you agree on together. Ananya reviews or corrects the suggestion, adds the amount and chooses what to share. A photo cannot prove a price or diagnose eating habits. Food-preference limits need agreement from both people and never block spending.",
   ],
   [
-    "What will the monthly recap show?",
-    "Spending by category, patterns across weeks, and check-ins to discuss. The walkthrough uses a clearly labeled sample month to show the planned experience. Monthly insights are not yet connected to the web app's saved expenses.",
+    "What does the monthly recap show?",
+    "Your saved spending by category, weekly totals, and check-ins to discuss. Choose a month in Insights to see actual entries, including past weeks. The landing-page walkthrough uses a fictional sample month.",
   ],
   [
     "Does the demo use real money?",
-    "No. It uses sample funds and stores your demo changes in this browser. No bank account is connected and no payment is made. Switch between Ananya and Kunal to explore both perspectives.",
+    "No. It uses sample funds in an isolated demo wallet saved on the server. No bank account is connected and no payment is made. Switch between Ananya and Kunal to explore both perspectives.",
   ],
   [
     "Can we change the weekly plan?",
@@ -388,7 +388,7 @@ export function Landing() {
                   <ChartNoAxesCombined />
                 </span>
                 <span className="preview-label">
-                  MONTHLY INSIGHTS · PRODUCT PREVIEW
+                  MONTHLY INSIGHTS · SAMPLE MONTH
                 </span>
                 <h3>
                   See the pattern.

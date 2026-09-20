@@ -8,6 +8,9 @@ import { Family } from "./pages/family";
 import { Landing } from "./pages/landing";
 import { About } from "./pages/about";
 
+import { Account } from "./pages/account";
+import { Insights } from "./pages/insights";
+
 export function App() {
   return (
     <PactProvider>
@@ -19,6 +22,8 @@ export function App() {
           <Route path="pact" element={<Pact />} />
           <Route path="family" element={<Family />} />
           <Route path="about" element={<About />} />
+          <Route path="account" element={<Account />} />
+          <Route path="insights" element={<Insights />} />
           <Route
             path="*"
             element={

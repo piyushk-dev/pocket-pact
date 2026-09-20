@@ -11,7 +11,6 @@ import {
   categoryLabels,
   categorySpent,
   money,
-  person,
   totalBudget,
   weekLabel,
   type Budgets,
@@ -20,7 +19,7 @@ import { usePact } from "../state";
 import { CategoryIcon, ErrorMessage, Modal } from "../components/ui";
 
 export function Pact() {
-  const { state, role, act, busy } = usePact();
+  const { state, role, act, busy, profile } = usePact();
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
   async function decide(accept: boolean) {
@@ -61,7 +60,10 @@ export function Pact() {
         </span>
         <div>
           <h2>{money(totalBudget(state.budgets))}, a week of possibilities.</h2>
-          <p>{weekLabel(state.weekStart)} · Agreed by Ananya and Kunal</p>
+          <p>
+            {weekLabel(state.weekStart)} · Shared by {profile.owner} and{" "}
+            {profile.supporter}
+          </p>
         </div>
         <span className="status okay">
           <Check size={13} /> Our agreement
@@ -70,10 +72,10 @@ export function Pact() {
       {state.proposal && (
         <section className="proposal-panel">
           <div className="section-heading">
-            <h2>{person[state.proposal.by]} suggested a little reshuffle.</h2>
+            <h2>{profile[state.proposal.by]} suggested a little reshuffle.</h2>
             <span className="status review">
               Waiting for{" "}
-              {person[state.proposal.by === "daughter" ? "father" : "daughter"]}
+              {profile[state.proposal.by === "owner" ? "supporter" : "owner"]}
             </span>
           </div>
           <p>“{state.proposal.note}”</p>
@@ -93,6 +95,12 @@ export function Pact() {
                 </div>
               ))}
           </div>
+          <p>
+            Fast-food preference:{" "}
+            {state.proposal.fastFoodLimit === null
+              ? "No weekly limit"
+              : `${state.proposal.fastFoodLimit} meals per week`}
+          </p>
           <div className="proposal-actions">
             <button
               className="button secondary"
@@ -156,6 +164,16 @@ export function Pact() {
           );
         })}
       </section>
+      <section className="food-preference">
+        <h2>Room for your food preferences.</h2>
+        <p>
+          {state.fastFoodLimit === null
+            ? "No fast-food limit in your agreement."
+            : `Your shared preference: up to ${state.fastFoodLimit} fast-food meals a week.`}{" "}
+          Suggestions from photos are confirmed by the owner. A flag starts a
+          conversation; it never blocks spending.
+        </p>
+      </section>
       <div className="pact-principles">
         <div>
           <LockKeyhole size={23} />
@@ -199,6 +217,9 @@ function PactEditor({ onClose }: { onClose: () => void }) {
     personal: String(state.budgets.personal / 100),
   });
   const [note, setNote] = useState("");
+  const [fastFoodLimit, setFastFoodLimit] = useState(
+    state.fastFoodLimit === null ? "" : String(state.fastFoodLimit),
+  );
   const [error, setError] = useState("");
   const budgets = Object.fromEntries(
     Object.entries(values).map(([key, value]) => [
@@ -216,6 +237,7 @@ function PactEditor({ onClose }: { onClose: () => void }) {
           budgets,
           note,
           baseVersion: state.pactVersion,
+          fastFoodLimit: fastFoodLimit === "" ? null : Number(fastFoodLimit),
         },
         "Proposal shared. Your current plan stays until you both agree.",
       );
@@ -264,6 +286,19 @@ function PactEditor({ onClose }: { onClose: () => void }) {
             keep the same weekly total.
           </p>
         )}
+        <label className="field">
+          Fast-food meals per week (optional)
+          <input
+            type="number"
+            min="0"
+            max="21"
+            step="1"
+            value={fastFoodLimit}
+            onChange={(e) => setFastFoodLimit(e.target.value)}
+            placeholder="No limit"
+          />
+          <small>Leave blank for no limit. The other person must agree.</small>
+        </label>
         <label className="field">
           What’s changing this week?
           <textarea

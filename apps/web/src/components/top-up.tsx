@@ -4,7 +4,7 @@ import { money } from "@shared/domain";
 import { usePact } from "../state";
 import { ErrorMessage, Modal } from "./ui";
 export function TopUpDialog({ onClose }: { onClose: () => void }) {
-  const { act, busy } = usePact();
+  const { act, busy, profile } = usePact();
   const [amount, setAmount] = useState("500");
   const [note, setNote] = useState("A little extra for this week.");
   const [error, setError] = useState("");
@@ -18,7 +18,7 @@ export function TopUpDialog({ onClose }: { onClose: () => void }) {
           amount: Math.round(Number(amount) * 100),
           note,
         },
-        "Demo top-up recorded. Ananya’s balance is updated.",
+        `${profile.owner}’s recorded balance is updated.`,
       );
       onClose();
     } catch (e) {
@@ -28,12 +28,14 @@ export function TopUpDialog({ onClose }: { onClose: () => void }) {
   return (
     <Modal title="A little extra support." onClose={onClose}>
       <p className="modal-intro">
-        Record money you’ve sent Ananya. It adds to her balance without changing
-        your category agreement.
+        Record money you’ve sent {profile.owner}. It adds to their balance
+        without changing your category agreement.
       </p>
       <div className="demo-callout">
         <ArrowDownLeft size={18} />
-        <span>This is a demo entry. No money will move.</span>
+        <span>
+          Record a transfer you made outside Pocket Pact. No money moves here.
+        </span>
       </div>
       <form
         onSubmit={(e) => {
@@ -54,7 +56,7 @@ export function TopUpDialog({ onClose }: { onClose: () => void }) {
           />
         </label>
         <label className="field">
-          A note from Dad
+          A note from you
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
